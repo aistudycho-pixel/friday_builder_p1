@@ -1,1 +1,54 @@
-/* Add styles here */
+body {
+  font-family: sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #e0f7fa; /* Changed to a light blue */
+}
+
+.container {
+  text-align: center;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+.number-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #eee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+#generate-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#generate-btn:hover {
+  background-color: #45a049;
+}
