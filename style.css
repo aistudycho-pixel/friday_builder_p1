@@ -1,19 +1,11 @@
 :root {
   --background-color: #e0f7fa;
   --container-background: white;
-  --text-color: #000;
+  --text-color: #333;
+  --number-background: #eee;
   --button-background: #4CAF50;
   --button-text: white;
-  --number-background: #eee;
-}
-
-body.dark-mode {
-  --background-color: #121212;
-  --container-background: #1e1e1e;
-  --text-color: #fff;
-  --button-background: #bb86fc;
-  --button-text: #000;
-  --number-background: #333;
+  --button-hover: #45a049;
 }
 
 body {
@@ -25,6 +17,15 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+  --background-color: #263238;
+  --container-background: #37474f;
+  --text-color: #eceff1;
+  --number-background: #546e7a;
+  --button-background: #00796b;
+  --button-hover: #004d40;
 }
 
 .container {
@@ -58,7 +59,7 @@ h1 {
   font-weight: bold;
 }
 
-#generate-btn, #theme-toggle {
+#generate-btn, #theme-toggle-btn {
   padding: 0.8rem 1.5rem;
   font-size: 1rem;
   background-color: var(--button-background);
@@ -67,8 +68,9 @@ h1 {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 10px;
 }
 
-#generate-btn:hover, #theme-toggle:hover {
-  opacity: 0.9;
+#generate-btn:hover, #theme-toggle-btn:hover {
+  background-color: var(--button-hover);
 }
