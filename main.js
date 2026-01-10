@@ -1,28 +1,26 @@
-const numberContainer = document.querySelector('.number-container');
-const generateBtn = document.getElementById('generate-btn');
-const themeToggleBtn = document.getElementById('theme-toggle-btn');
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleButton = document.getElementById('theme-toggle-btn');
+    const body = document.body;
 
-function generateNumbers() {
-  numberContainer.innerHTML = '';
-  const numbers = new Set();
-  while (numbers.size < 6) {
-    numbers.add(Math.floor(Math.random() * 45) + 1);
-  }
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        body.classList.add(savedTheme);
+        themeToggleButton.textContent = savedTheme === 'dark-mode' ? 'Light Mode' : 'Dark Mode';
+    } else {
+        // Default to light mode
+        themeToggleButton.textContent = 'Dark Mode';
+    }
 
-  for (const number of [...numbers].sort((a, b) => a - b)) {
-    const circle = document.createElement('div');
-    circle.classList.add('number');
-    circle.textContent = number;
-    numberContainer.appendChild(circle);
-  }
-}
-
-function toggleTheme() {
-  document.body.classList.toggle('dark-mode');
-}
-
-generateBtn.addEventListener('click', generateNumbers);
-themeToggleBtn.addEventListener('click', toggleTheme);
-
-// Generate initial numbers
-generateNumbers();
+    themeToggleButton.addEventListener('click', () => {
+        if (body.classList.contains('dark-mode')) {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light-mode');
+            themeToggleButton.textContent = 'Dark Mode';
+        } else {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark-mode');
+            themeToggleButton.textContent = 'Light Mode';
+        }
+    });
+});
