@@ -4,11 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load saved theme
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme);
-        themeToggleButton.textContent = savedTheme === 'dark-mode' ? 'Light Mode' : 'Dark Mode';
+    if (savedTheme === 'dark-mode') {
+        body.classList.add('dark-mode');
+        themeToggleButton.textContent = 'Light Mode';
     } else {
-        // Default to light mode
+        // Default to light mode or if savedTheme is 'light-mode'
+        body.classList.remove('dark-mode'); // Ensure no dark mode class
         themeToggleButton.textContent = 'Dark Mode';
     }
 
