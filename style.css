@@ -1,11 +1,11 @@
 :root {
     --background-color: #ECEFF1;
     --text-color: rgba(0,0,0,0.87);
-    --message-background: white;
-    --message-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    --link-background: #039be5;
-    --link-text-color: white;
-    --h2-color: #ffa100;
+    --container-background: white; /* Renamed from --message-background */
+    --container-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Renamed from --message-shadow */
+    --button-background: #039be5; /* Renamed from --link-background */
+    --button-text-color: white; /* Renamed from --link-text-color */
+    --h1-color: #ffa100; /* Renamed from --h2-color, now for h1 */
 }
 
 body {
@@ -15,73 +15,87 @@ body {
     margin: 0;
     padding: 0;
     transition: background-color 0.3s, color 0.3s;
+    display: flex; /* Added for centering content */
+    justify-content: center; /* Added for centering content */
+    align-items: center; /* Added for centering content */
+    min-height: 100vh; /* Added for centering content */
 }
 
 body.dark-mode {
     --background-color: #263238;
     --text-color: #eceff1;
-    --message-background: #37474f;
-    --message-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.3);
-    --link-background: #00796b;
-    --link-text-color: white;
-    --h2-color: #ffc107;
+    --container-background: #37474f;
+    --container-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.3);
+    --button-background: #00796b;
+    --button-text-color: white;
+    --h1-color: #ffc107;
 }
 
-#message {
-    background: var(--message-background);
+.container { /* Renamed from #message */
+    background: var(--container-background);
     max-width: 360px;
-    margin: 100px auto 16px;
+    margin: 0 auto; /* Centering for larger screens */
     padding: 32px 24px;
     border-radius: 3px;
-    box-shadow: var(--message-shadow);
+    box-shadow: var(--container-shadow);
+    text-align: center; /* Center content inside container */
 }
 
-#message h2 {
-    color: var(--h2-color);
+.container h1 {
+    color: var(--h1-color);
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0 0 20px;
+}
+
+#menu-display {
+    background: var(--background-color); /* Use a slightly different background */
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 20px;
     font-weight: bold;
-    font-size: 16px;
-    margin: 0 0 8px;
-}
-
-#message h1 {
-    font-size: 22px;
-    font-weight: 300;
     color: var(--text-color);
-    margin: 0 0 16px;
+    min-height: 40px; /* Ensure some height even when empty */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-#message p {
-    line-height: 140%;
-    margin: 16px 0 24px;
-    font-size: 14px;
+#menu-display p {
+    margin: 0; /* Reset margin for p inside menu-display */
 }
 
-#message a {
+#select-menu-btn {
     display: block;
-    text-align: center;
-    background: var(--link-background);
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--link-text-color);
+    width: 100%;
+    background: var(--button-background);
+    color: var(--button-text-color);
     padding: 16px;
     border-radius: 4px;
-    box-shadow: var(--message-shadow);
+    box-shadow: var(--container-shadow);
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
-#load {
-    color: rgba(0,0,0,0.4);
-    text-align: center;
-    font-size: 13px;
+#select-menu-btn:hover {
+    filter: brightness(110%);
 }
 
 @media (max-width: 600px) {
-    body, #message {
+    body, .container { /* Changed #message to .container */
         margin-top: 0;
-        background: var(--message-background);
+        background: var(--container-background); /* Changed --message-background to --container-background */
         box-shadow: none;
+        border-radius: 0;
     }
     body {
-        border-top: 16px solid #ffa100;
+        border-top: 16px solid var(--h1-color); /* Use h1-color for border */
     }
 }
 
@@ -92,8 +106,9 @@ body.dark-mode {
     padding: 10px 15px;
     border-radius: 5px;
     border: none;
-    background-color: var(--link-background);
-    color: var(--link-text-color);
+    background-color: var(--button-background); /* Changed from --link-background */
+    color: var(--button-text-color); /* Changed from --link-text-color */
     cursor: pointer;
-    box-shadow: var(--message-shadow);
+    box-shadow: var(--container-shadow); /* Changed from --message-shadow */
+    z-index: 100; /* Ensure it's above other content */
 }

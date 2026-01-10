@@ -8,8 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.add('dark-mode');
         themeToggleButton.textContent = 'Light Mode';
     } else {
-        // Default to light mode or if savedTheme is 'light-mode'
-        body.classList.remove('dark-mode'); // Ensure no dark mode class
+        body.classList.remove('dark-mode');
         themeToggleButton.textContent = 'Dark Mode';
     }
 
@@ -23,5 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', 'dark-mode');
             themeToggleButton.textContent = 'Light Mode';
         }
+    });
+
+    // Dinner Menu Selector Logic
+    const menuDisplay = document.getElementById('menu-display');
+    const selectMenuButton = document.getElementById('select-menu-btn');
+
+    const dinnerOptions = [
+        "김치찌개", "된장찌개", "제육볶음", "돈까스", "파스타",
+        "초밥", "햄버거", "피자", "치킨", "떡볶이",
+        "비빔밥", "불고기", "삼겹살", "갈비찜", "칼국수"
+    ];
+
+    selectMenuButton.addEventListener('click', () => {
+        const randomIndex = Math.floor(Math.random() * dinnerOptions.length);
+        const selectedMenu = dinnerOptions[randomIndex];
+        menuDisplay.innerHTML = `<p>오늘의 메뉴는: <strong>${selectedMenu}</strong>!</p>`;
     });
 });
