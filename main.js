@@ -35,8 +35,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     selectMenuButton.addEventListener('click', () => {
-        const randomIndex = Math.floor(Math.random() * dinnerOptions.length);
-        const selectedMenu = dinnerOptions[randomIndex];
-        menuDisplay.innerHTML = `<p>오늘의 메뉴는: <strong>${selectedMenu}</strong>!</p>`;
+        selectMenuButton.disabled = true; // Disable button during spin
+        let spinCount = 0;
+        const spinInterval = setInterval(() => {
+            const randomIndex = Math.floor(Math.random() * dinnerOptions.length);
+            menuDisplay.innerHTML = `<p>고민중... <strong>${dinnerOptions[randomIndex]}</strong></p>`;
+            spinCount++;
+        }, 100); // Change menu every 100ms
+
+        setTimeout(() => {
+            clearInterval(spinInterval); // Stop spinning
+            const finalRandomIndex = Math.floor(Math.random() * dinnerOptions.length);
+            const selectedMenu = dinnerOptions[finalRandomIndex];
+            menuDisplay.innerHTML = `<p>오늘의 메뉴는: <strong>${selectedMenu}</strong>!</p>`;
+            selectMenuButton.disabled = false; // Enable button after selection
+        }, 3000); // Spin for 3 seconds
     });
 });
