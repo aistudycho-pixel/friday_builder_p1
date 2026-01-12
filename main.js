@@ -1,29 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Dinner Menu Selector Logic
-    const menuDisplay = document.getElementById('menu-display');
-    const selectMenuButton = document.getElementById('select-menu-btn');
+    const imageUploadInput = document.getElementById('image-upload-input');
+    const imagePreviewSection = document.getElementById('image-preview-section');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    const resultDisplay = document.getElementById('result-display');
 
-    const dinnerOptions = [
-        "김치찌개", "된장찌개", "제육볶음", "돈까스", "파스타",
-        "초밥", "햄버거", "피자", "치킨", "떡볶이",
-        "비빔밥", "불고기", "삼겹살", "갈비찜", "칼국수"
-    ];
+    let uploadedFiles = [];
 
-    selectMenuButton.addEventListener('click', () => {
-        selectMenuButton.disabled = true; // Disable button during spin
-        let spinCount = 0;
-        const spinInterval = setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * dinnerOptions.length);
-            menuDisplay.innerHTML = `<p>고민중... <strong>${dinnerOptions[randomIndex]}</strong></p>`;
-            spinCount++;
-        }, 100); // Change menu every 100ms
+    imageUploadInput.addEventListener('change', (event) => {
+        imagePreviewSection.innerHTML = '';
+        uploadedFiles = [];
+
+        const files = event.target.files;
+
+        for (const file of files) {
+            uploadedFiles.push(file);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.classList.add('image-preview');
+                imagePreviewSection.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    analyzeBtn.addEventListener('click', () => {
+        if (uploadedFiles.length === 0) {
+            resultDisplay.innerHTML = '<p>분석할 이미지를 먼저 올려주세요.</p>';
+            return;
+        }
+
+        analyzeBtn.disabled = true;
+        resultDisplay.innerHTML = '<p>차트를 분석중입니다...</p>';
 
         setTimeout(() => {
-            clearInterval(spinInterval); // Stop spinning
-            const finalRandomIndex = Math.floor(Math.random() * dinnerOptions.length);
-            const selectedMenu = dinnerOptions[finalRandomIndex];
-            menuDisplay.innerHTML = `<p>오늘의 메뉴는: <strong>${selectedMenu}</strong>!</p>`;
-            selectMenuButton.disabled = false; // Enable button after selection
-        }, 3000); // Spin for 3 seconds
+            const randomIndex = Math.floor(Math.random() * uploadedFiles.length);
+            const winnerIndex = randomIndex + 1;
+
+            resultDisplay.innerHTML = `<p>기술적 분석 결과, 확률상 ${winnerIndex}번째 이미지가 가장 좋아보입니다!</p>`;
+            analyzeBtn.disabled = false;
+        }, 3000);
     });
 });

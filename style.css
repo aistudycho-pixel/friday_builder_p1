@@ -9,7 +9,8 @@
     --button-hover-background: #9087fa;
     --button-text-color: #282c36;
     --h1-color: #a29bfe;
-    --menu-display-background: #4a4f5f;
+    --input-background: #4a4f5f;
+    --input-border-color: #5a5f6f;
 }
 
 body {
@@ -28,7 +29,7 @@ body {
 
 .container {
     background: var(--container-background);
-    max-width: 420px;
+    max-width: 600px;
     width: 100%;
     margin: 0 auto;
     padding: 40px;
@@ -46,27 +47,36 @@ body {
     letter-spacing: -0.03em;
 }
 
-#menu-display {
-    background: var(--menu-display-background);
-    padding: 25px;
-    border-radius: 8px;
+#image-upload-section {
     margin-bottom: 25px;
-    font-size: 1.8em;
-    font-weight: 500;
+}
+
+#image-upload-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px dashed var(--input-border-color);
+    background-color: var(--input-background);
     color: var(--text-color);
-    min-height: 80px;
+    cursor: pointer;
+}
+
+#image-preview-section {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    transition: background-color 0.4s ease, border-color 0.4s ease;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
 }
 
-#menu-display p {
-    margin: 0;
+.image-preview {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--input-border-color);
 }
 
-#select-menu-btn {
+#analyze-btn {
     display: block;
     width: 100%;
     background: var(--button-background);
@@ -82,33 +92,29 @@ body {
     font-weight: 700;
     letter-spacing: 0.05em;
     transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-bottom: 25px;
 }
 
-#select-menu-btn:hover:not(:disabled) {
+#analyze-btn:hover:not(:disabled) {
     background-color: var(--button-hover-background);
     transform: translateY(-1px);
 }
 
-#select-menu-btn:disabled {
+#analyze-btn:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-    .container {
-        margin-top: 0;
-        box-shadow: none;
-        border-radius: 0;
-        padding: 20px;
-    }
-    .container h1 {
-        font-size: 1.8em;
-    }
-    #menu-display {
-        font-size: 1.4em;
-        min-height: 60px;
-    }
+#result-display {
+    background: var(--input-background);
+    padding: 25px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: var(--text-color);
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--input-border-color);
 }
