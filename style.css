@@ -147,3 +147,28 @@ body {
     margin-top: 0;
     color: var(--h1-color);
 }
+
+.technical-indicators {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--input-border-color);
+}
+
+.technical-indicators h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: var(--h1-color);
+    font-size: 1em;
+}
+
+.technical-indicators p {
+    margin-bottom: 3px;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+.ocr-status {
+    margin-left: 15px;
+    font-size: 0.9em;
+    color: var(--text-color);
+}

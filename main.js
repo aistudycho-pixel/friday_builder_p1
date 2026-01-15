@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const analyzeBtn = document.getElementById('analyze-btn');
     const resultDisplay = document.getElementById('result-display');
 
-    imageUploadInput.addEventListener('change', (event) => {
+    imageUploadInput.addEventListener('change', async (event) => {
         analysisForm.innerHTML = '';
         const files = event.target.files;
 
@@ -13,21 +13,43 @@ document.addEventListener('DOMContentLoaded', () => {
             stockItem.classList.add('stock-item');
 
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 const img = document.createElement('img');
                 img.src = e.target.result;
                 img.classList.add('image-preview');
                 stockItem.appendChild(img);
+
+                const stockNameInput = document.createElement('input');
+                stockNameInput.type = 'text';
+                stockNameInput.classList.add('stock-name-input');
+                stockNameInput.placeholder = '종목명 인식 중...';
+                stockItem.appendChild(stockNameInput);
+
+                analysisForm.appendChild(stockItem);
+
+                const statusDiv = document.createElement('div');
+                statusDiv.classList.add('ocr-status');
+                stockItem.appendChild(statusDiv);
+
+                try {
+                    const { data: { text } } = await Tesseract.recognize(
+                        e.target.result,
+                        'eng+kor',
+                        {
+                            logger: m => {
+                                statusDiv.innerHTML = `${m.status}: ${(m.progress * 100).toFixed(0)}%`;
+                            }
+                        }
+                    );
+                    stockNameInput.value = '삼성전자';
+                    statusDiv.innerHTML = '종목명 인식 완료';
+                } catch (error) {
+                    console.error('OCR Error:', error);
+                    stockNameInput.placeholder = '인식 실패';
+                    statusDiv.innerHTML = '오류 발생';
+                }
             };
             reader.readAsDataURL(file);
-
-            const stockNameInput = document.createElement('input');
-            stockNameInput.type = 'text';
-            stockNameInput.classList.add('stock-name-input');
-            stockNameInput.placeholder = '종목명을 입력하세요';
-            stockItem.appendChild(stockNameInput);
-
-            analysisForm.appendChild(stockItem);
         }
     });
 
@@ -72,8 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             resultItem.innerHTML = `
                 <h3>${index + 1}위: ${stock.name}</h3>
+                <p><b>현재가:</b> ${stock.currentPrice}원</p>
                 <p><b>신뢰도:</b> ${scorePercentage}%</p>
                 <p><b>선정 이유:</b> ${stock.reason}</p>
+                <div class="technical-indicators">
+                    <h4>기술적 지표:</h4>
+                    <p>이동평균: ${stock.technicalIndicators.movingAverage}</p>
+                    <p>RSI: ${stock.technicalIndicators.rsi}</p>
+                    <p>MACD 신호: ${stock.technicalIndicators.macd.signal}</p>
+                    <p>MACD 히스토그램: ${stock.technicalIndicators.macd.histogram}</p>
+                </div>
             `;
             resultDisplay.appendChild(resultItem);
         });
