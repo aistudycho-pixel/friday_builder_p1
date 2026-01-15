@@ -18,12 +18,12 @@ const stockCodeMap = {
 const getHistoricalData = async (stockCode) => {
     const url = `https://finance.naver.com/item/sise_day.naver?code=${stockCode}`;
     const { data } = await axios.get(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0' } // Add User-Agent to prevent blocking
+        headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     const $ = cheerio.load(data);
     const prices = [];
     $('table.type2 tr[onmouseover="mouseOver(this)"]').each((i, el) => {
-        if (i < 10) { // Get last 10 days of data
+        if (i < 10) {
             const tds = $(el).find('td');
             const closingPrice = tds.eq(1).text().replace(/,/g, '');
             if (closingPrice) {
@@ -42,6 +42,41 @@ const calculateSMA = (data, period) => {
     return sum / period;
 };
 
+const generateAIComment = (stockName, currentPrice, sma5) => {
+    if (!currentPrice || !sma5) {
+        return "데이터가 부족하여 상세 분석을 생성할 수 없습니다.";
+    }
+
+    const price = parseFloat(currentPrice);
+    const sma = parseFloat(sma5);
+    const diff = price - sma;
+    const diffPercent = (diff / sma) * 100;
+
+    let analysis = `**${stockName}에 대한 AI 분석:**\n\n`;
+    analysis += `현재 주가는 ${price.toLocaleString()}원이며, 5일 이동평균선은 ${sma.toLocaleString()}원입니다. `;
+
+    if (diff > 0) {
+        analysis += `현재 주가가 5일 이동평균선보다 ${diff.toLocaleString()}원 (${diffPercent.toFixed(2)}%) 높아, 단기적으로 강한 상승 모멘텀을 보여주고 있습니다. `;
+        if (diffPercent > 3) {
+            analysis += "최근 매수세가 강하게 유입된 것으로 보이며, 단기 과열 가능성도 염두에 두어야 합니다.";
+        } else {
+            analysis += "안정적인 상승 추세를 유지하고 있는 것으로 판단됩니다.";
+        }
+    } else if (diff < 0) {
+        analysis += `현재 주가가 5일 이동평균선보다 ${Math.abs(diff).toLocaleString()}원 (${Math.abs(diffPercent).toFixed(2)}%) 낮아, 단기적인 조정 국면에 있는 것으로 보입니다. `;
+        if (diffPercent < -3) {
+            analysis += "최근 매도 압력이 강했던 것으로 보이며, 기술적 반등 시점을 신중하게 관찰할 필요가 있습니다.";
+        } else {
+            analysis += "다만 하락폭이 크지 않아, 곧 지지선을 찾고 반등을 시도할 가능성도 있습니다.";
+        }
+    } else {
+        analysis += "현재 주가가 5일 이동평균선과 거의 동일한 수준으로, 단기적인 방향성을 탐색하는 구간으로 보입니다.";
+    }
+
+    return analysis;
+};
+
+
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
@@ -54,11 +89,8 @@ app.post('/api/analyze', async (req, res) => {
         const analyzedStocks = await Promise.all(stocks.map(async (stock) => {
             const stockCode = stockCodeMap[stock.name.trim()];
             let currentPrice = 'N/A';
-            let analysis = {
-                movingAverage: 'N/A',
-                sma5: 'N/A',
-                recommendation: 'N/A',
-            };
+            let sma5 = null;
+            let recommendation = 'N/A';
 
             if (stockCode) {
                 try {
@@ -69,31 +101,25 @@ app.post('/api/analyze', async (req, res) => {
                     currentPrice = parseFloat(priceText.replace(/,/g, ''));
 
                     const historicalData = await getHistoricalData(stockCode);
-                    const sma5 = calculateSMA(historicalData, 5);
+                    sma5 = calculateSMA(historicalData, 5);
                     
-                    if (sma5) {
-                        analysis.sma5 = sma5.toFixed(2);
-                        if (currentPrice > sma5) {
-                            analysis.recommendation = '현재가가 5일 이동평균선 위에 있어 단기 상승 추세일 수 있습니다.';
-                        } else if (currentPrice < sma5) {
-                            analysis.recommendation = '현재가가 5일 이동평균선 아래에 있어 단기 하락 추세일 수 있습니다.';
-                        } else {
-                            analysis.recommendation = '현재가가 5일 이동평균선과 비슷합니다.';
-                        }
-                    }
+                    recommendation = generateAIComment(stock.name, currentPrice, sma5);
 
                 } catch (error) {
                     console.error(`Error processing data for ${stock.name}:`, error.message);
+                    recommendation = "데이터를 가져오는 중 오류가 발생했습니다.";
                 }
+            } else {
+                recommendation = "분석할 수 없는 종목입니다. 종목명을 확인해주세요.";
             }
 
             return {
                 ...stock,
                 currentPrice: currentPrice,
                 score: Math.random(),
-                reason: analysis.recommendation || "데이터가 부족하여 분석할 수 없습니다.",
+                reason: recommendation,
                 technicalIndicators: {
-                    movingAverage: analysis.sma5, // Use calculated SMA
+                    movingAverage: sma5 ? sma5.toFixed(2) : 'N/A',
                     rsi: (Math.random() * 70 + 30).toFixed(2), // Still fake
                     macd: { // Still fake
                         signal: (Math.random() * 2 - 1).toFixed(2),

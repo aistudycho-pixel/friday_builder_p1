@@ -96,15 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             resultItem.innerHTML = `
                 <h3>${index + 1}위: ${stock.name}</h3>
-                <p><b>현재가:</b> ${stock.currentPrice}원</p>
-                <p><b>신뢰도:</b> ${scorePercentage}%</p>
-                <p><b>선정 이유:</b> ${stock.reason}</p>
+                <p><b>현재가:</b> ${stock.currentPrice.toLocaleString()}원</p>
+                <p><b>AI 신뢰도:</b> ${scorePercentage}%</p>
+                <div class="ai-comment">
+                    ${stock.reason.replace(/\n/g, '<br>')}
+                </div>
                 <div class="technical-indicators">
                     <h4>기술적 지표:</h4>
                     <p>5일 이동평균: ${stock.technicalIndicators.movingAverage}</p>
-                    <p>RSI: ${stock.technicalIndicators.rsi}</p>
-                    <p>MACD 신호: ${stock.technicalIndicators.macd.signal}</p>
-                    <p>MACD 히스토그램: ${stock.technicalIndicators.macd.histogram}</p>
+                    <p>RSI (임시): ${stock.technicalIndicators.rsi}</p>
+                    <p>MACD (임시): ${stock.technicalIndicators.macd.signal}</p>
                 </div>
             `;
             resultDisplay.appendChild(resultItem);

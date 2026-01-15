@@ -172,3 +172,12 @@ body {
     font-size: 0.9em;
     color: var(--text-color);
 }
+
+.ai-comment {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--background-color);
+    border-radius: 5px;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
