@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const path = require('path');
 const app = express();
 const port = 3000;
 
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+// Serve static files from the project root directory
+app.use(express.static(path.join(__dirname, '../')));
 
 const stockCodeMap = {
     '삼성전자': '005930',
@@ -76,11 +80,6 @@ const generateAIComment = (stockName, currentPrice, sma5) => {
     return analysis;
 };
 
-
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
-
 app.post('/api/analyze', async (req, res) => {
     const stocks = req.body.stocks;
     console.log('Received stocks for analysis:', stocks);
@@ -140,4 +139,5 @@ app.post('/api/analyze', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
+    console.log(`Frontend running at http://localhost:${port}`);
 });
