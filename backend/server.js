@@ -1,17 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const app = express();
-const port = 3000;
-
-app.use(cors());
-app.use(express.json());
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
-
-const express = require('express');
-const cors = require('cors');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const app = express();
@@ -27,6 +15,33 @@ const stockCodeMap = {
     '현대차': '005380',
 };
 
+const getHistoricalData = async (stockCode) => {
+    const url = `https://finance.naver.com/item/sise_day.naver?code=${stockCode}`;
+    const { data } = await axios.get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0' } // Add User-Agent to prevent blocking
+    });
+    const $ = cheerio.load(data);
+    const prices = [];
+    $('table.type2 tr[onmouseover="mouseOver(this)"]').each((i, el) => {
+        if (i < 10) { // Get last 10 days of data
+            const tds = $(el).find('td');
+            const closingPrice = tds.eq(1).text().replace(/,/g, '');
+            if (closingPrice) {
+                prices.push(parseFloat(closingPrice));
+            }
+        }
+    });
+    return prices;
+};
+
+const calculateSMA = (data, period) => {
+    if (data.length < period) {
+        return null;
+    }
+    const sum = data.slice(0, period).reduce((a, b) => a + b, 0);
+    return sum / period;
+};
+
 app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
@@ -39,36 +54,48 @@ app.post('/api/analyze', async (req, res) => {
         const analyzedStocks = await Promise.all(stocks.map(async (stock) => {
             const stockCode = stockCodeMap[stock.name.trim()];
             let currentPrice = 'N/A';
+            let analysis = {
+                movingAverage: 'N/A',
+                sma5: 'N/A',
+                recommendation: 'N/A',
+            };
 
             if (stockCode) {
                 try {
-                    const url = `https://finance.naver.com/item/main.naver?code=${stockCode}`;
-                    const { data } = await axios.get(url);
-                    const $ = cheerio.load(data);
-                    const priceText = $('p.no_today span.blind').first().text();
-                    currentPrice = priceText.replace(/,/g, '');
+                    const mainUrl = `https://finance.naver.com/item/main.naver?code=${stockCode}`;
+                    const { data: mainData } = await axios.get(mainUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+                    const $main = cheerio.load(mainData);
+                    const priceText = $main('p.no_today span.blind').first().text();
+                    currentPrice = parseFloat(priceText.replace(/,/g, ''));
+
+                    const historicalData = await getHistoricalData(stockCode);
+                    const sma5 = calculateSMA(historicalData, 5);
+                    
+                    if (sma5) {
+                        analysis.sma5 = sma5.toFixed(2);
+                        if (currentPrice > sma5) {
+                            analysis.recommendation = '현재가가 5일 이동평균선 위에 있어 단기 상승 추세일 수 있습니다.';
+                        } else if (currentPrice < sma5) {
+                            analysis.recommendation = '현재가가 5일 이동평균선 아래에 있어 단기 하락 추세일 수 있습니다.';
+                        } else {
+                            analysis.recommendation = '현재가가 5일 이동평균선과 비슷합니다.';
+                        }
+                    }
+
                 } catch (error) {
-                    console.error(`Error scraping data for ${stock.name}:`, error.message);
+                    console.error(`Error processing data for ${stock.name}:`, error.message);
                 }
             }
 
-            const reasons = [
-                "정배열 초기 단계로, 상승 추세로의 전환이 기대됩니다.",
-                "거래량이 급증하며 강한 매수세가 유입되었습니다.",
-                "주요 저항선을 돌파하며 새로운 지지선을 형성했습니다.",
-                "이동평균선이 골든크로스를 형성하며 긍정적인 신호를 보내고 있습니다.",
-                "RSI 지표가 과매도 구간에서 벗어나 상승 동력을 얻고 있습니다."
-            ];
-
             return {
                 ...stock,
-                currentPrice,
+                currentPrice: currentPrice,
                 score: Math.random(),
-                reason: reasons[Math.floor(Math.random() * reasons.length)],
+                reason: analysis.recommendation || "데이터가 부족하여 분석할 수 없습니다.",
                 technicalIndicators: {
-                    movingAverage: (Math.random() * 100).toFixed(2),
-                    rsi: (Math.random() * 70 + 30).toFixed(2),
-                    macd: {
+                    movingAverage: analysis.sma5, // Use calculated SMA
+                    rsi: (Math.random() * 70 + 30).toFixed(2), // Still fake
+                    macd: { // Still fake
                         signal: (Math.random() * 2 - 1).toFixed(2),
                         histogram: (Math.random() * 0.5 - 0.25).toFixed(2),
                     }
@@ -87,9 +114,4 @@ app.post('/api/analyze', async (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
-});
-
-
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
 });

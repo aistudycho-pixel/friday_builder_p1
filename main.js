@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         }
                     );
-                    stockNameInput.value = '삼성전자';
+                    const lines = text.split('\n');
+                    const stockName = lines[0] || '인식 실패';
+                    stockNameInput.value = stockName;
                     statusDiv.innerHTML = '종목명 인식 완료';
                 } catch (error) {
                     console.error('OCR Error:', error);
@@ -99,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p><b>선정 이유:</b> ${stock.reason}</p>
                 <div class="technical-indicators">
                     <h4>기술적 지표:</h4>
-                    <p>이동평균: ${stock.technicalIndicators.movingAverage}</p>
+                    <p>5일 이동평균: ${stock.technicalIndicators.movingAverage}</p>
                     <p>RSI: ${stock.technicalIndicators.rsi}</p>
                     <p>MACD 신호: ${stock.technicalIndicators.macd.signal}</p>
                     <p>MACD 히스토그램: ${stock.technicalIndicators.macd.histogram}</p>
