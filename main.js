@@ -113,26 +113,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const analyzeStocks = async (stocks) => {
-        try {
-            const response = await fetch('http://localhost:3000/api/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ stocks }),
-            });
+        const response = await fetch('http://localhost:3000/api/analyze', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ stocks }),
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const analyzedStocks = await response.json();
-            return analyzedStocks;
-        } catch (error) {
-            console.error("Error analyzing stocks:", error);
-            resultDisplay.innerHTML = `<p>분석 중 오류가 발생했습니다: ${error.message}</p>`;
-            return [];
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const analyzedStocks = await response.json();
+        return analyzedStocks;
     };
 
     const handleAnalysis = async () => {
@@ -143,9 +137,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showLoading(true);
-        const analyzedStocks = await analyzeStocks(stocks);
-        showLoading(false);
-        displayResults(analyzedStocks);
+        try {
+            const analyzedStocks = await analyzeStocks(stocks);
+            showLoading(false);
+            displayResults(analyzedStocks);
+        } catch (error) {
+            console.error("Error analyzing stocks:", error);
+            showLoading(false);
+            resultDisplay.innerHTML = `<p>분석 중 오류가 발생했습니다: ${error.message}</p>`;
+        }
     };
 
     analyzeBtn.addEventListener('click', handleAnalysis);
